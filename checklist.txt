@@ -1,0 +1,8 @@
+1. Scaffold Service
+2. Define the request/response schemas
+3. Implement validation (400)
+4. Implement cleaning/normalization (WARN)
+5. Implement feature building
+6. Implement model loading + inference (503)
+7. Decision mapping
+8. Return response (send it back)So
