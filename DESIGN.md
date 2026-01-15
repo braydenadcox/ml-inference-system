@@ -16,7 +16,7 @@
 
 ### Endpoint: POST /predict
 
-### Request JSON:
+### Request JSON (Payment System Sends JSON to Service):
 - request_id (string, UUID, required)
 - event_time (ISO-8601 timestamp, required)
 - transaction:
@@ -28,7 +28,7 @@
   - merchant_category (string)
   - device_type (string)
 
-### Response JSON:
+### Response JSON (System Sends JSON Back to Payment System):
 - request_id
 - decision (approve | review | decline)
 - risk_score (float 0–1)
