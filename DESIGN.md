@@ -116,7 +116,7 @@ Model Introspection
 
 ## Observability
 
-# Goal
+### Goal
 - Make it obviosu when the service is healthy or broken
 - Make failures debuggable using request_id, logs, and basic metrics.
 
@@ -156,7 +156,7 @@ Debugging Workflow (simple)
   3. If model-related, rollback to previous active_model_version and restart
 
 
-# Testing Strategy
+## Testing Strategy
 
 Unit Tests
 - validation: required fields rejected (400) with correct reason
@@ -172,7 +172,7 @@ Integration Tests
 - /predict when model missing returns 503
 
 
-# Runbook (V1)
+## Runbook (V1)
 
 Start Service
 - command to run server (filled in during implementation)
