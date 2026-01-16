@@ -1,8 +1,12 @@
-1. Scaffold Service
-2. Define the request/response schemas
-3. Implement validation (400)
-4. Implement cleaning/normalization (WARN)
-5. Implement feature building
-6. Implement model loading + inference (503)
-7. Decision mapping
-8. Return response (send it back)So
+Scaffold Service (DONE)
+2. Implemenet model loading (from loader.py)
+3. Define the request/response schemas (use Pydantic models)
+3.5. Wire up FastAPI Skeleton endpoints (/health, /ready, /model, /predict)
+4. Implement 400 validation (required fields, format checks, business rules)
+5. Implement cleaning/normalization (WARN) (Missing optional fields -> "unknown")
+6. Implement feature building (validated/normalized data to model input format)
+7. Implement 503 inference (Model.predict() with error handling)
+8. Decision mapping (risk_score -> approve/review/decline)
+9. Wire up endpoints and return response (connect pieces in /predict, implement /health, /ready and /model)
+10. Add logging and metrics (Structured logs per request, basic counters/histograms)
+11. Write tests (Unit tests for validation, integration tests for endpoints)

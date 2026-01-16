@@ -18,6 +18,8 @@ class ModelLoader:
 
     def load_active_model(self):
         """Loads the active model given in active_model.json"""
+
+        # Reads the active model version from the config file
         active_config_path = self.config_dir / "active_model.json"
         if not active_config_path.exists():
             raise FileNotFoundError(f"Active model config not found at {active_config_path}")
@@ -28,10 +30,41 @@ class ModelLoader:
         active_version = config.get("active_model_version")
         if not active_version:
             raise ValueError("Active version not specified in config")
+        
+        # Loads the model metadata
+        model_dir = self.models_dir / active_version
+        meta_path = model_dir / "meta.json"
 
+        if not meta_path.exists():
+            raise FileNotFoundError(f"Model metadata not found at {meta_path}")
+        
+        with open(meta_path, 'r') as f:
+            self.metadata = json.load(f)
+
+        print(f"Loaded metadata: {self.metadata}")
+    
+        # Loads the model.pkl file
+        model_path = model_dir / "model.pkl"
+
+        if not model_path.exists():
+            raise FileNotFoundError(f"Model file not found at {model_path}")
+        
+        with open(model_path, 'rb') as f:
+            self.model = pickle.load(f)
+
+        self.is_loaded = True
+        print(f"Model version {active_version} loaded successfully")
+        
 
     def predict(self, input_data):
         """Makes a prediction using the loaded model."""
         if not self.is_loaded:
             raise RuntimeError("No model is loaded")
         return self.model.predict(input_data)
+    
+
+    def get_metadata(self) -> Optional[dict]:
+        """Returns the metadata of the loaded model."""
+        if not self.is_loaded:
+            return None
+        return self.metadata
