@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from datetime import datetime, timezone
+from src.api.schemas import PredictRequest, PredictResponse
 from src.model.loader import ModelLoader
 
 app = FastAPI()
@@ -23,21 +25,26 @@ def health():
 @app.get("/ready")
 def ready():
     """Readiness check endpoint."""
-    if model_loader.is_loaded:
-        return {"status": "ready"}
-    else:
-        return {"status": "not ready"}, 503
+    if not model_loader.is_loaded:
+        raise HTTPException(status_code=503, detail="Model not loaded")
+    return {"status": "ready"}
     
 @app.get("/model")
 def get_model_info():
     """Endpoint to get information about the loaded model."""
-    metadata = model_loader.metadata
-    if metadata:
-        return metadata
-    else:
-        return {"error": "No model loaded"}, 503
+    if not model_loader.is_loaded:
+        raise HTTPException(status_code=503, detail="Model not loaded")
+    return model_loader.metadata
     
 @app.post("/predict")
-def predict():
-    # PLACEHOLDER
-    return {"message": "Prediction endpoint not implemented yet."}
+def predict(req: PredictRequest):
+    if not model_loader.is_loaded:
+        raise HTTPException(status_code=503, detail="Model not loaded")
+    
+    return PredictResponse(
+        request_id=req.request_id,
+        decision="review",
+        risk_score=0.5,
+        model_version=model_loader.metadata["model_version"],
+        processed_at=datetime.now(timezone.utc),
+    )

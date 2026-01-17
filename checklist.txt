@@ -1,6 +1,6 @@
-Scaffold Service (DONE)
+1. Scaffold Service (DONE)
 2. Implement model loading (from loader.py) (DONE)
-3. Define the request/response schemas (use Pydantic models)
+3. Define the request/response schemas (use Pydantic models) (DONE)
 3.5. Wire up FastAPI Skeleton endpoints (/health, /ready, /model, /predict)
 4. Implement 400 validation (required fields, format checks, business rules)
 5. Implement cleaning/normalization (WARN) (Missing optional fields -> "unknown")
