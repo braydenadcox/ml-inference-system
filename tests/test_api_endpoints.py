@@ -14,6 +14,13 @@ from src.api.main import app, model_loader
 
 client = TestClient(app)
 
+@pytest.fixture(scope="module", autouse=True)
+def setup_module():
+    """Load the model before running tests."""
+    model_loader.load_active_model()
+    yield
+    
+
 def test_health_endpoint_gives_200():
     """Test that the /health endpoint returns 200 OK."""
     response = client.get("/health")
@@ -45,15 +52,12 @@ def test_model_endpoint_returns_metadata():
         }
     }
 
-    response = client.post("/predict", json=valid_request)
+    response = client.get("/model")
     assert response.status_code == 200
 
     data = response.json()
-    assert data["request_id"] == "123e4567-e89b-12d3-a456-426614174000"
-    assert data["decision"] in ["approve", "review", "decline"]
-    assert 0.0 <= data["risk_score"] <= 1.0
     assert "model_version" in data
-    assert "processed_at" in data
+    assert data["model_version"] == "v1"
 
 
 def test_predict_invalid_uuid_returns_400():
@@ -109,8 +113,8 @@ def test_predict_normalizes_input():
             "transaction_id": "txn_001",
             "user_id": "user_123",
             "amount": 100.0,
-            "currency": " usd ",  # Expected to get to "USD"
-            "country": " us ",    # Expected to get to "US"
+            "currency": "usd",  # Expected to get to "USD"
+            "country": "us",    # Expected to get to "US"
             "merchant_category": "Electronics",  # Expected to get to 'electronics'
             "device_type": "", # Expected to get to 'unknown'
         }

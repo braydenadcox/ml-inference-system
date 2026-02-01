@@ -12,7 +12,7 @@ def normalize_request(req: PredictRequest) -> PredictRequest:
     """
     normalized_transaction = req.transaction.model_copy(
         update={
-            "currency": req.transaction.transaction_id.strip(),
+            "transaction_id": req.transaction.transaction_id.strip(),
             "user_id": req.transaction.user_id.strip(),
             "currency": req.transaction.currency.strip().upper(),
             "country": req.transaction.country.strip().upper(),

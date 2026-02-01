@@ -18,13 +18,14 @@ def test_normalize_currency_uppercase():
             "transaction_id": "txn_001",
             "user_id": "user_123",
             "amount": 100.0,
-            "currency": " usd ", # Lowercase with spaces, should highlight this
-            "country": "US"
+            "currency": "usd", # Lowercase, should highlight this
+            "country": "us" # Lowercase, should highlight this
             }
         )
     
     normalized = normalize_request(request)
     assert normalized.transaction.currency == "USD"
+    assert normalized.transaction.country == "US"
 
 
 

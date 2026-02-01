@@ -28,7 +28,7 @@ def test_model_loader_fails_when_active_config_missing(tmp_path):
     with pytest.raises(FileNotFoundError) as exc_info:
         loader.load_active_model()
 
-    assert "Active model configuration file not found" in str(exc_info.value)
+    assert "Active model config not found" in str(exc_info.value)
 
 
 def test_model_loader_fails_when_model_file_missing(tmp_path):

@@ -6,7 +6,7 @@ and accepting valid ones per DESIGN.md specifications.
 """
 import pytest
 from pydantic import ValidationError
-from src.api.models import PredictRequest, Transaction
+from src.api.schemas import PredictRequest, Transaction
 
 def test_valid_predict_request():
     """Test that a valid PredictRequest passes validation."""
