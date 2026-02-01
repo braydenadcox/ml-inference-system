@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from datetime import datetime, timezone
 from src.api.schemas import PredictRequest, PredictResponse
 from src.model.loader import ModelLoader
@@ -36,11 +37,26 @@ def get_model_info():
         raise HTTPException(status_code=503, detail="Model not loaded")
     return model_loader.metadata
     
+from fastapi.responses import JSONResponse
+
 @app.post("/predict")
 def predict(req: PredictRequest):
+    '''# TEMP validation trigger (replace with real rules in Step 4)
+    if getattr(req, "income", None) is None:
+        return JSONResponse(
+            status_code=400,
+            content={
+                "code": "validation_error",
+                "message": "Invalid request",
+                "field_errors": [
+                    {"field": "income", "issue": "required"}
+                ],
+            },
+        )'''
+
     if not model_loader.is_loaded:
         raise HTTPException(status_code=503, detail="Model not loaded")
-    
+
     return PredictResponse(
         request_id=req.request_id,
         decision="review",
