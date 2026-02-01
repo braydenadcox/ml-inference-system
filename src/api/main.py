@@ -6,6 +6,7 @@ from src.api.schemas import PredictRequest, PredictResponse, ErrorResponse, Fiel
 from src.model.loader import ModelLoader
 from src.model.normalize import normalize_request
 from src.model.features import build_features
+from src.model.decision import map_decision
 import logging
 
 
@@ -82,9 +83,11 @@ def predict(req: PredictRequest):
 
         raise HTTPException(status_code=503, detail="Inference error")
     
+    decision = map_decision(risk_score)
+    
     return PredictResponse(
         request_id=req.request_id,
-        decision="review",
+        decision=decision,
         risk_score=risk_score,
         model_version=model_loader.metadata.get("model_version", "unknown"),
         processed_at=datetime.now(timezone.utc)
