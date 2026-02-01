@@ -1,29 +1,88 @@
 # ML Inference Service
 
-Production-style real-time ML inference backend for fraud and risk scoring.
+A production-style machine learning inference API built with **FastAPI** and **Docker**.
 
-This service accepts a single transaction event, validates and normalizes input,
-runs a versioned ML model, and returns a risk-based decision
-(approve / review / decline) with strong failure isolation and observability.
+This service validates incoming requests, constructs features, runs a versioned ML model, and returns a real-time risk decision.  
+The focus is on **inference infrastructure**, not model training.
 
-## Features
-- Strict request validation with consistent HTTP 400 semantics
-- Versioned model loading with fast rollback
-- Real-time inference with 503 isolation on model failure
-- Structured logging and basic metrics
-- Health and readiness endpoints for production use
+---
 
-## Architecture (High Level)
-Request → Validation → Normalization → Feature Building → Model Inference →
-Decision Mapping → Response
+## Why This Project Exists
 
-For full system design, tradeoffs, and failure handling, see:
-**[DESIGN.md](DESIGN.md)**
+Most ML demos stop at model training.  
+This project focuses on what *actually matters in production*:
 
-## Running Locally
+- strict input validation
+- deterministic inference behavior
+- model versioning
+- health and readiness checks
+- fast, reproducible deployment
 
-```bash
-python -m venv .venv
-source .venv/bin/activate  # or Windows equivalent
-pip install -r requirements.txt
-uvicorn src.api.main:app --reload
+---
+
+## Tech Stack
+
+- **FastAPI** – API framework  
+- **Pydantic** – request validation  
+- **scikit-learn** – model inference  
+- **Docker** – containerization  
+- **Docker Compose** – one-command local run  
+
+---
+
+## Project Layout
+
+```text
+ml-inference-system/
+├── src/
+│   ├── api/              # API routes, logging, schemas
+│   └── model/            # Feature building & model loading
+├── models/
+│   └── v1/               # Versioned model artifacts
+├── configs/              # Active model configuration
+├── scripts/
+│   └── test_predict.ps1  # End-to-end smoke test
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.inference.txt
+├── requirements.dev.txt
+└── README.md
+```
+
+## Quick Start on Docker
+
+### Requirements
+- Docker
+- Docker Compose
+
+### Start the Service
+```powershell
+docker compose up -d --build
+```
+
+The API will be accessible at
+```text
+http://localhost:8000
+```
+
+Verify the services and endpoints with
+```powershell
+curl.exe http://localhost:8000/health
+curl.exe http://localhost:8000/ready
+```
+
+Inference Testing With Mock Request
+```powershell
+.\scripts\test_predict.ps1
+```
+
+How to Stop Service
+```powershell
+docker compose down
+```
+
+
+
+
+
+
