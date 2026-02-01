@@ -6,4 +6,4 @@ class DummyModel:
     
     def predict_proba(self, input_data):
         num_samples = len(input_data)
-        return np.array([[0.5, 0.5]] * num_samples)  # Dummy probabilities
+        return np.array([[0.5]] * num_samples)  # Dummy probabilities
