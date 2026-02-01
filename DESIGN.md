@@ -39,6 +39,10 @@
 - 400: invalid input (schema or value error)
 - 503: model unavailable or inference failure
 
+### Validation Error Semantics (Important):
+- The service intentionally returns HTTP 400 for request validation failures (schema + value constraints), rather than FastAPI's default 422.
+- Rationale: Clients get a single error class for "bad request" and a consistent error payload for debugging.
+
 
 ## Validation and Cleaning Rules
 
