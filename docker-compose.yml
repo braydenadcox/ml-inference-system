@@ -1,0 +1,20 @@
+services:
+  ml-inference:
+    container_name: ml-inference-system
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: ml-inference-system:v1
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app/src
+      - PYTHONDONTWRITEBYTECODE=1
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health').read()\""]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 10s
