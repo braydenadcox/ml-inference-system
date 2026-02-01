@@ -3,31 +3,30 @@ from prometheus_client import Counter, Histogram, Gauge
 requests_total = Counter(
     'requests_total',
     'Total number of requests received',
-    ['endpoint', 'method', 'status_code']
+    ['endpoint', 'method']
 )
 
 responses_total = Counter(
     'responses_total',
     'Total number of responses sent',
-    ['endpoint', 'method', 'status_code']
+    ['endpoint', 'status_code']
 )
 
 invalid_requests_total = Counter(
     'invalid_requests_total',
     'Total number of invalid requests received',
-    ['endpoint', 'method', 'error_type']
+    ['reason']
 )
 
 inference_failures_total = Counter(
     'inference_failures_total',
     'Total number of inference failures',
-    ['endpoint', 'method', 'error_type']
 )
 
 latency_ms = Histogram(
     'latency_ms',
     'Latency of requests in milliseconds',
-    ['endpoint', 'method']
+    ['endpoint']
 )
 
 model_loaded = Gauge(
