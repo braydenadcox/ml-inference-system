@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from src.api.schemas import PredictRequest, PredictResponse, ErrorResponse, FieldError
 from src.model.loader import ModelLoader
 from src.model.normalize import normalize_request
+from src.model.features import build_features
 
 
 app = FastAPI()
@@ -54,6 +55,10 @@ def predict(req: PredictRequest):
         raise HTTPException(status_code=503, detail="Model not loaded")
 
     req = normalize_request(req)
+
+    features_df = build_features(req)
+    print(features_df)
+    print(features_df.dtypes)
 
     return PredictResponse(
         request_id=req.request_id,
