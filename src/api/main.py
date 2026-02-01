@@ -6,9 +6,13 @@ from src.api.schemas import PredictRequest, PredictResponse, ErrorResponse, Fiel
 from src.model.loader import ModelLoader
 from src.model.normalize import normalize_request
 from src.model.features import build_features
+import logging
 
 
 app = FastAPI()
+
+logger = logging.getLogger("ml_inference_system")
+logging.basicConfig(level=logging.INFO)
 
 # Global model loader instance
 model_loader = ModelLoader()
@@ -57,16 +61,35 @@ def predict(req: PredictRequest):
     req = normalize_request(req)
 
     features_df = build_features(req)
-    print(features_df)
-    print(features_df.dtypes)
 
+    try:
+        risk_proba = model_loader.model.predict_proba(features_df)
+
+        if len(risk_proba) != 1:
+            raise ValueError(f"Prediction returned {len(risk_proba)} rows, expected 1")
+        
+        first_row = risk_proba[0]
+        if len(first_row) != 2:
+            raise ValueError(f"Prediction probabilities have {len(first_row)} columns, expected >= 2")
+
+        risk_score = float(first_row[1])
+
+        if not (0.0 <= risk_score <= 1.0):
+            raise ValueError(f"Predicted risk score is out of range: {risk_score}")
+        
+    except Exception:
+        logger.exception("Inference error for request ID %s", req.request_id)
+
+        raise HTTPException(status_code=503, detail="Inference error")
+    
     return PredictResponse(
         request_id=req.request_id,
         decision="review",
-        risk_score=0.5,
-        model_version=model_loader.metadata["model_version"],
-        processed_at=datetime.now(timezone.utc),
+        risk_score=risk_score,
+        model_version=model_loader.metadata.get("model_version", "unknown"),
+        processed_at=datetime.now(timezone.utc)
     )
+    
 
 @app.exception_handler(RequestValidationError)
 async def validation_exception_handler(request: Request, exc: RequestValidationError):
