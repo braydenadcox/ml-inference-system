@@ -1,6 +1,6 @@
 from datetime import datetime
 from pydantic import BaseModel, field_validator
-from typing import Literal
+from typing import Literal, List
 import uuid
 
 class Transaction(BaseModel):
@@ -59,3 +59,12 @@ class PredictResponse(BaseModel):
     
     model_version: str
     processed_at: datetime
+
+class FieldError(BaseModel):
+    field: str
+    issue: str
+
+class ErrorResponse(BaseModel):
+    code: str
+    message: str
+    field_errors: List[FieldError]

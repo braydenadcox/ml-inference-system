@@ -1,7 +1,8 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from datetime import datetime, timezone
-from src.api.schemas import PredictRequest, PredictResponse
+from src.api.schemas import PredictRequest, PredictResponse, ErrorResponse, FieldError
 from src.model.loader import ModelLoader
 
 app = FastAPI()
@@ -37,9 +38,14 @@ def get_model_info():
         raise HTTPException(status_code=503, detail="Model not loaded")
     return model_loader.metadata
     
-from fastapi.responses import JSONResponse
 
-@app.post("/predict")
+@app.post("/predict",
+          response_model=PredictResponse,
+          responses={400: {
+              "model": ErrorResponse,
+              "description": "Validation error (bad request)"}
+              }
+            )
 def predict(req: PredictRequest):
     '''# TEMP validation trigger (replace with real rules in Step 4)
     if getattr(req, "income", None) is None:
@@ -63,4 +69,25 @@ def predict(req: PredictRequest):
         risk_score=0.5,
         model_version=model_loader.metadata["model_version"],
         processed_at=datetime.now(timezone.utc),
+    )
+
+@app.exception_handler(RequestValidationError)
+async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    """Custom exception handler for request validation errors."""
+    field_errors = []
+    for error in exc.errors():
+        loc = error.get('loc', [])
+        field = ".".join(str(x) for x in loc if x != 'body')
+        issue = error.get('msg', 'Invalid request')
+        field_errors.append(FieldError(field=field, issue=issue))
+
+    payload = ErrorResponse(
+        code="validation_error",
+        message="Invalid request",
+        field_errors=field_errors,
+    )
+
+    return JSONResponse(
+        status_code=400,
+        content=payload.model_dump(),
     )
