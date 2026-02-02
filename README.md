@@ -7,6 +7,41 @@ The focus is on **inference infrastructure**, not model training.
 
 ---
 
+## Live Deployment: Google Cloud Run
+
+The deployed service performs strict request validation, runs a versioned model,
+and returns deterministic risk decisions over HTTPS.
+
+**Base URL**  
+https://ml-inference-system-560793842211.us-west1.run.app
+
+### Health & Readiness
+```bash
+curl https://ml-inference-system-560793842211.us-west1.run.app/health
+curl https://ml-inference-system-560793842211.us-west1.run.app/ready
+curl https://ml-inference-system-560793842211.us-west1.run.app/model
+```
+
+### Prediction API Requests
+
+Valid request example
+```bash
+curl -X POST https://ml-inference-system-560793842211.us-west1.run.app/predict \
+  -H "Content-Type: application/json" \
+  -d @requests/predict_valid.json
+```
+
+Invalid request example
+```bash
+curl -i -X POST https://ml-inference-system-560793842211.us-west1.run.app/predict \
+  -H "Content-Type: application/json" \
+  -d @requests/predict_invalid.json
+```
+
+Invalid requests return `400 Bad Request` with field-level validation errors.
+
+Inference and internal failures give back `503 Service Unavailable`.
+
 ## Why This Project Exists
 
 Most ML demos stop at model training.  
@@ -40,6 +75,9 @@ ml-inference-system/
 ├── models/
 │   └── v1/               # Versioned model artifacts
 ├── configs/              # Active model configuration
+├── requests/             # Example inference payloads
+│   ├── predict_valid.json
+│   └── predict_invalid.json
 ├── scripts/
 │   └── test_predict.ps1  # End-to-end smoke test
 ├── Dockerfile
@@ -80,6 +118,7 @@ How to Stop Service
 ```powershell
 docker compose down
 ```
+
 
 
 
