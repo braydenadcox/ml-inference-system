@@ -1,0 +1,23 @@
+name: Container build + scan
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+
+jobs:
+  build-and-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t ml-inference-system:${{ github.sha }} .
+
+      - name: Scan image (fail on HIGH/CRITICAL)
+        uses: aquasecurity/trivy-action@0.20.0
+        with:
+          image-ref: ml-inference-system:${{ github.sha }}
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          scanners: vuln
